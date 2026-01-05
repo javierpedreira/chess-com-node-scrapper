@@ -137,3 +137,11 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# JSON game files (but keep package.json, package-lock.json, and vercel.json)
+*.json
+!package.json
+!package-lock.json
+!vercel.json
+.vercel
+.env*.local

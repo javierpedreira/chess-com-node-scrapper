@@ -1,0 +1,28 @@
+{
+  "name": "chess-com-node-scrapper",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A script to scrap chess.com games",
+  "main": "download-chesscom.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vercel dev",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/javierpedreira/chess-com-node-scrapper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/javierpedreira/chess-com-node-scrapper/issues"
+  },
+  "homepage": "https://github.com/javierpedreira/chess-com-node-scrapper#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "pgn-parser": "^2.2.1",
+    "yargs": "^18.0.0"
+  }
+}

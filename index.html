@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess.com Game Downloader</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+      color: #667eea;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .error.active {
+      display: block;
+    }
+
+    .success {
+      background: #efe;
+      color: #3c3;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .success.active {
+      display: block;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>♟️ Chess.com Game Downloader</h1>
+    <p class="subtitle">Download your chess.com games in JSON format</p>
+
+    <form id="downloadForm">
+      <div class="form-group">
+        <label for="username">Username *</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          required 
+          placeholder="e.g., magnuscarlsen"
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="months">Months Back</label>
+          <input 
+            type="number" 
+            id="months" 
+            name="months" 
+            min="0" 
+            placeholder="All time"
+          >
+          <div class="help-text">Leave empty for all games</div>
+        </div>
+
+        <div class="form-group">
+          <label for="tail">Number of Games</label>
+          <input 
+            type="number" 
+            id="tail" 
+            name="tail" 
+            min="1" 
+            placeholder="All games"
+          >
+          <div class="help-text">Most recent N games</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="timeControl">Time Control</label>
+        <select id="timeControl" name="timeControl">
+          <option value="">All time controls</option>
+          <option value="bullet">Bullet (≤ 3 min)</option>
+          <option value="blitz">Blitz (3-10 min)</option>
+          <option value="rapid">Rapid (10-60 min)</option>
+          <option value="classical">Classical (60-180 min)</option>
+          <option value="daily">Daily (correspondence)</option>
+        </select>
+      </div>
+
+      <button type="submit" id="submitBtn">Download Games</button>
+    </form>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Downloading games...</p>
+    </div>
+
+    <div class="error" id="error"></div>
+    <div class="success" id="success"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('downloadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const success = document.getElementById('success');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Reset UI
+      error.classList.remove('active');
+      success.classList.remove('active');
+      submitBtn.disabled = true;
+      loading.classList.add('active');
+
+      const formData = new FormData(form);
+      const data = {
+        user: formData.get('username'),
+        months: formData.get('months') || undefined,
+        tail: formData.get('tail') || undefined,
+        timeControl: formData.get('timeControl') || undefined
+      };
+
+      // Remove undefined values
+      Object.keys(data).forEach(key => data[key] === undefined && delete data[key]);
+
+      try {
+        const response = await fetch('/api/download', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || errorData.message || 'Failed to download games');
+        }
+
+        const json = await response.json();
+
+        // Create download link
+        const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${data.user}-games.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        success.textContent = `✅ Successfully downloaded ${json.total_parsed_games} games!`;
+        success.classList.add('active');
+      } catch (err) {
+        error.textContent = `❌ Error: ${err.message}`;
+        error.classList.add('active');
+      } finally {
+        submitBtn.disabled = false;
+        loading.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>
+
