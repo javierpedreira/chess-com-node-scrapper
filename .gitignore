@@ -149,10 +149,6 @@ vite.config.ts.timestamp-*
 dist/
 *.js.map
 
-# Old JavaScript files (after TypeScript migration)
-download-chesscom.js
-display-games.js
-server.js
-api/download.js
+# Vercel
 .vercel
 .env*.local
