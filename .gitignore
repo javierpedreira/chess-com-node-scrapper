@@ -143,5 +143,16 @@ vite.config.ts.timestamp-*
 !package.json
 !package-lock.json
 !vercel.json
+!tsconfig.json
+
+# TypeScript build output
+dist/
+*.js.map
+
+# Old JavaScript files (after TypeScript migration)
+download-chesscom.js
+display-games.js
+server.js
+api/download.js
 .vercel
 .env*.local

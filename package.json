@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "description": "A script to scrap chess.com games",
-  "main": "download-chesscom.js",
+  "main": "download-chesscom.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vercel dev",
-    "start": "node server.js"
+    "start": "tsx server.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -24,5 +26,12 @@
     "node-fetch": "^3.3.2",
     "pgn-parser": "^2.2.1",
     "yargs": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@types/yargs": "^17.0.35",
+    "@vercel/node": "^5.5.16",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
