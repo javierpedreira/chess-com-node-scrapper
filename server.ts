@@ -27,7 +27,7 @@ const server = http.createServer(async (req, res) => {
   // Serve index.html
   if (req.url === '/' || req.url === '/index.html') {
     try {
-      const filePath = path.join(__dirname, 'index.html');
+      const filePath = path.join(__dirname, 'public', 'index.html');
       const content = fs.readFileSync(filePath, 'utf-8');
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(content);
@@ -123,4 +123,5 @@ server.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
   console.log(`📝 Open http://localhost:${PORT} in your browser`);
 });
+
 
