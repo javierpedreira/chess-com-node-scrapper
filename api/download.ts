@@ -1,4 +1,4 @@
-import { downloadGames } from '../../download-chesscom.js';
+import { downloadGames } from '../download-chesscom.js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(
